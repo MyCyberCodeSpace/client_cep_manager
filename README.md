@@ -41,3 +41,9 @@ Deixo logo abaixo algumas imagens da aplicação:
 
 ![alt text](assets/screenshots/screenshot_01.png)
 ![alt text](assets/screenshots/screenshot_02.png)
+
+
+## Changelog
+
+- **18/08/2025** - Commit inicial: estrutura básica do projeto
+- **21/08/2025** - Atualização: corrigido erro no teclado ao sair da tela do formulário
