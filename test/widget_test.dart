@@ -6,20 +6,53 @@
 // tree, read text, and verify that the values of widget properties are correct.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:log_aqua_app/core/data/initial_client_data.dart';
 import 'package:log_aqua_app/features/clients/repository/cliente_repository.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class MockDatabase extends Mock implements Database {}
 
-void main() {
+void main() async {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   late ClienteRepository clienteRepository;
+  final database = await databaseFactory.openDatabase(
+    inMemoryDatabasePath,
+    options: OpenDatabaseOptions(
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+        CREATE TABLE clientes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nomeCompleto TEXT NOT NULL,
+          cep INTEGER NoriOT NULL,
+          estado TEXT NOT NULL,
+          cidade TEXT NOT NULL,
+          bairro TEXT NOT NULL,
+          endereco TEXT NOT NULL,
+          ultimaAtualizacao TEXT NOT NULL
+        );
+      ''');
+
+        for (var cliente in listaClientes) {
+          await db.insert('clientes', {
+            'nomeCompleto': cliente.nomeCompleto,
+            'cep': cliente.cep,
+            'estado': cliente.estado,
+            'cidade': cliente.cidade,
+            'bairro': cliente.bairro,
+            'endereco': cliente.endereco,
+            'ultimaAtualizacao': cliente.ultimaAtualizacao,
+          });
+        }
+      },
+    ),
+  );
 
   setUp(() {
-    clienteRepository = ClienteRepository(
-      MockDatabase(),
-      http.Client(),
-    );
+    clienteRepository = ClienteRepository(database, http.Client());
   });
 
   group('formatarData', () {
