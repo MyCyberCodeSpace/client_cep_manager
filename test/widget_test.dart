@@ -7,11 +7,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:log_aqua_app/core/data/initial_client_data.dart';
+import 'package:log_aqua_app/core/models/client_model.dart';
 import 'package:log_aqua_app/features/clients/repository/cliente_repository.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-class MockDatabase extends Mock implements Database {}
 
 void main() async {
   sqfliteFfiInit();
@@ -94,11 +92,49 @@ void main() async {
 
     test('cep válido - deve retornar os dados', () async {
       final result = await clienteRepository.viaCepApi(88304900);
-
       expect(result['estado'], 'Santa Catarina');
       expect(result['cidade'], 'Itajaí');
       expect(result['bairro'], 'Vila Operária');
       expect(result['endereco'], 'Rua Alberto Werner');
+    });
+
+    group('Testes no banco de dados', () {
+      test('remover cliente do banco de dados', () async {
+        final List<Map<String, dynamic>> mapsBefore = await database
+            .query('clientes', orderBy: 'ultimaAtualizacao DESC');
+
+        final ClientModel clientBefore = ClientModel(
+          id: mapsBefore[0]['id'] as int,
+          nomeCompleto: mapsBefore[0]['nomeCompleto'] as String,
+          cep: mapsBefore[0]['cep'] as int,
+          estado: mapsBefore[0]['estado'] as String,
+          cidade: mapsBefore[0]['cidade'] as String,
+          bairro: mapsBefore[0]['bairro'] as String,
+          endereco: mapsBefore[0]['endereco'] as String,
+          ultimaAtualizacao:
+              mapsBefore[0]['ultimaAtualizacao'] as String,
+        );
+
+        final result = await clienteRepository.removeClient(
+          clientBefore,
+        );
+
+        final List<Map<String, dynamic>> mapsAfter = await database
+            .query('clientes', orderBy: 'ultimaAtualizacao DESC');
+        final ClientModel clienteAfter = ClientModel(
+          id: mapsAfter[0]['id'] as int,
+          nomeCompleto: mapsAfter[0]['nomeCompleto'] as String,
+          cep: mapsAfter[0]['cep'] as int,
+          estado: mapsAfter[0]['estado'] as String,
+          cidade: mapsAfter[0]['cidade'] as String,
+          bairro: mapsAfter[0]['bairro'] as String,
+          endereco: mapsAfter[0]['endereco'] as String,
+          ultimaAtualizacao:
+              mapsAfter[0]['ultimaAtualizacao'] as String,
+        );
+
+        expect(clientBefore.id != clienteAfter.id, true);
+      });
     });
   });
 }
