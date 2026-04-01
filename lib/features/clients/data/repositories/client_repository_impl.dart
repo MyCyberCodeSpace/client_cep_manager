@@ -1,15 +1,18 @@
 import 'package:log_aqua_app/core/models/client_model.dart';
+import 'package:log_aqua_app/features/clients/domain/repositories/client_repository.dart';
+import 'package:log_aqua_app/features/clients/domain/typedefs/client_typedefs.dart';
+import 'package:log_aqua_app/features/clients/data/services/via_cep_service.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-class ClienteRepository {
+class ClientRepositoryImpl implements ClientRepository {
   final Database database;
-  final http.Client client;
+  final ViaCepService viaCepService;
 
-  ClienteRepository(this.database, this.client);
+  ClientRepositoryImpl(this.database, http.Client client)
+    : viaCepService = ViaCepService(client);
 
-  String formatarData(String dataIso) {
+  String _formatarData(String dataIso) {
     final dt = DateTime.parse(dataIso);
 
     String doisDigitos(int n) => n.toString().padLeft(2, '0');
@@ -23,8 +26,9 @@ class ClienteRepository {
     return '$dia/$mes/$ano às ${hora}h:${minuto}m';
   }
 
-  Future<void> addClient(ClientModel cliente) async {
-    final dados = await viaCepApi(cliente.cep);
+  @override
+  FutureVoid addClient(ClientModel cliente) async {
+    final dados = await searchCEP(cliente.cep);
     if (dados.containsKey('erro')) {
       throw ('CEP inválido: ${dados['erro']}');
     }
@@ -48,8 +52,9 @@ class ClienteRepository {
     });
   }
 
-  Future<ClientModel> updateClient(ClientModel cliente) async {
-    final dados = await viaCepApi(cliente.cep);
+  @override
+  FutureClient updateClient(ClientModel cliente) async {
+    final dados = await searchCEP(cliente.cep);
 
     if (dados.containsKey('erro')) {
       throw ('Para a consulta do cep ${cliente.cep} aconteceu algum erro. Verifique o cep digitado.');
@@ -82,7 +87,8 @@ class ClienteRepository {
     return newClientData;
   }
 
-  Future<int> removeClient(ClientModel cliente) async {
+  @override
+  FutureInt removeClient(ClientModel cliente) async {
     return await database.delete(
       'clientes',
       where: 'id = ?',
@@ -90,7 +96,8 @@ class ClienteRepository {
     );
   }
 
-  Future<List<ClientModel>> getAllClients() async {
+  @override
+  FutureClientList getAllClients() async {
     final List<Map<String, dynamic>> maps = await database.query(
       'clientes',
       orderBy: 'ultimaAtualizacao DESC',
@@ -112,38 +119,15 @@ class ClienteRepository {
       );
     }
     if (listaCliente.isNotEmpty) {
-      listaCliente[0].ultimaAtualizacao = formatarData(
+      listaCliente[0].ultimaAtualizacao = _formatarData(
         listaCliente[0].ultimaAtualizacao,
       );
     }
     return listaCliente;
   }
 
-  Future<Map<String, dynamic>> viaCepApi(int cep) async {
-    try {
-      final url = Uri.https('viacep.com.br', '/ws/$cep/json/');
-      final response = await client.get(url);
-
-      if (response.statusCode >= 400) {
-        return {'erro': 'Erro na consulta ao ViaCEP'};
-      }
-
-      final Map<String, dynamic> listData = json.decode(
-        response.body,
-      );
-
-      if (listData['erro'] == 'true') {
-        return {'erro': 'CEP não encontrado.'};
-      }
-
-      return {
-        'estado': listData['estado'],
-        'cidade': listData['localidade'],
-        'bairro': listData['bairro'],
-        'endereco': listData['logradouro'],
-      };
-    } catch (e) {
-      return {'erro': 'Ocorreu um erro: $e'};
-    }
+  @override
+  FutureCepData searchCEP(int cep) async {
+    return await viaCepService.searchCEP(cep);
   }
 }

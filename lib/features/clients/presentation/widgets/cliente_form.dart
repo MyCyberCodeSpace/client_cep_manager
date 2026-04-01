@@ -5,14 +5,14 @@ import 'package:log_aqua_app/core/ui_helpers/main_alert_dialog.dart';
 import 'package:log_aqua_app/core/ui_helpers/main_snackbar_helper.dart';
 import 'package:log_aqua_app/core/widgets/main_bottom_sheet.dart';
 import 'package:log_aqua_app/core/widgets/main_circular_progress.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_bloc.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_event.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_state.dart';
-import 'package:log_aqua_app/features/clients/widgets/form_custom_spacer.dart';
-import 'package:log_aqua_app/features/clients/widgets/form_input_decoration.dart';
-import 'package:log_aqua_app/features/clients/widgets/form_input_decoration_hint.dart';
-import 'package:log_aqua_app/features/clients/widgets/form_text_entry_indicator.dart';
-import 'package:log_aqua_app/features/clients/widgets/form_main_buttons.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_event.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_state.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/form_custom_spacer.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/form_input_decoration.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/form_input_decoration_hint.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/form_text_entry_indicator.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/form_main_buttons.dart';
 
 class ClientForm extends StatefulWidget {
   final ClientModel? client;

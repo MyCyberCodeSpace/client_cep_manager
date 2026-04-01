@@ -1,21 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:log_aqua_app/core/models/client_model.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_event.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_state.dart';
-import 'package:log_aqua_app/features/clients/repository/cliente_repository.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_event.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_state.dart';
+import 'package:log_aqua_app/features/clients/domain/repositories/client_repository.dart';
 
 class ClientBloc extends Bloc<ClientEvent, ClientState> {
-  final Database database;
-  final http.Client client;
+  final ClientRepository repository;
 
-  ClientBloc(this.database, this.client)
+  ClientBloc(this.repository)
     : super(ClientInitialState()) {
     on<ClientEventLoadAll>((event, emit) async {
       emit(ClientStateLoading());
       try {
-        final repository = ClienteRepository(database, client);
         final listaCliente = await repository.getAllClients();
         emit(ClientStateLoadedAll(listaCliente)); 
       } catch (e) {
@@ -26,7 +22,6 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<ClientEventAdd>((event, emit) async {
       emit(ClientStateLoading());
       try {
-        final repository = ClienteRepository(database, client);
         await repository.addClient(event.cliente);
         emit(
           ClientStateSuccessMessage(
@@ -43,7 +38,6 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<ClientEventUpdate>((event, emit) async {
       emit(ClientStateLoading());
       try {
-        final repository = ClienteRepository(database, client);
         ClientModel cliente = await repository.updateClient(
           event.cliente,
         );
@@ -67,7 +61,6 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<ClientEventDelete>((event, emit) async {
       emit(ClientStateLoading());
       try {
-        final repository = ClienteRepository(database, client);
         await repository.removeClient(event.cliente);
         emit(
           ClientStateSuccessMessage('Cliente removido com sucesso.'),
@@ -82,8 +75,7 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
     on<ClientEventSearchCEP>((event, emit) async {
       emit(ClientStateLoading());
       try {
-        final repository = ClienteRepository(database, client);
-        final searchMap = await repository.viaCepApi(event.cep);
+        final searchMap = await repository.searchCEP(event.cep);
         if (searchMap.containsKey('erro')) {
           emit(ClientStateErroMessageSearchCEP(searchMap['erro']));
         } else {

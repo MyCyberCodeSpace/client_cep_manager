@@ -5,9 +5,9 @@ import 'package:log_aqua_app/core/ui_helpers/main_snackbar_helper.dart';
 import 'package:log_aqua_app/core/widgets/main_bottom_sheet.dart';
 import 'package:log_aqua_app/core/widgets/main_circular_progress.dart';
 import 'package:log_aqua_app/core/widgets/main_suporte.dart';
-import 'package:log_aqua_app/features/clients/presentation/bloc/client_bloc.dart';
-import 'package:log_aqua_app/features/clients/presentation/bloc/client_event.dart';
-import 'package:log_aqua_app/features/clients/presentation/bloc/client_state.dart';
+import 'package:log_aqua_app/features/home/presentation/bloc/home_bloc.dart';
+import 'package:log_aqua_app/features/home/presentation/bloc/home_event.dart';
+import 'package:log_aqua_app/features/home/presentation/bloc/home_state.dart';
 import 'package:log_aqua_app/features/home/presentation/widgets/text_last_updated.dart';
 import 'package:log_aqua_app/features/home/presentation/controllers/home_controller.dart';
 
@@ -18,26 +18,26 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<ClientBloc>().add(ClientEventLoadAll());
+    context.read<HomeBloc>().add(const HomeEventLoadAllUsers());
     final currentHeight = MediaQuery.of(context).size.height;
     final currentWidth = MediaQuery.of(context).size.width;
 
-    return BlocConsumer<ClientBloc, ClientState>(
+    return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, state) {
-        if (state is ClientStateErroMessage) {
+        if (state is HomeStateErroMessage) {
           showMyDialog(context, 'Opps..', state.message);
-        } else if (state is ClientStateSuccessMessage) {
+        } else if (state is HomeStateSuccessMessage) {
           showMainSnackBar(context, state.message);
         }
       },
 
       builder: (context, state) {
-        if (state is ClientStateLoading) {
+        if (state is HomeStateLoading) {
           return Scaffold(
             body: MainCircularProgress(),
             bottomSheet: mainBottomSheet(),
           );
-        } else if (state is ClientStateLoadedAll) {
+        } else if (state is HomeStateLoadedAll) {
           return Scaffold(
             body: Padding(
               padding: EdgeInsetsGeometry.only(

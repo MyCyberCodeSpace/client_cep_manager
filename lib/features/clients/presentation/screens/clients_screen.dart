@@ -7,11 +7,11 @@ import 'package:log_aqua_app/core/widgets/main_app_bar.dart';
 import 'package:log_aqua_app/core/widgets/main_bottom_sheet.dart';
 import 'package:log_aqua_app/core/widgets/main_circular_progress.dart';
 import 'package:log_aqua_app/core/widgets/main_suporte.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_bloc.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_event.dart';
-import 'package:log_aqua_app/features/clients/bloc/client_state.dart';
-import 'package:log_aqua_app/features/clients/screens/edit_clients_screen.dart';
-import 'package:log_aqua_app/features/clients/screens/new_client_screen.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_bloc.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_event.dart';
+import 'package:log_aqua_app/features/clients/presentation/bloc/client_state.dart';
+import 'package:log_aqua_app/features/clients/presentation/screens/edit_clients_screen.dart';
+import 'package:log_aqua_app/features/clients/presentation/screens/new_client_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ClientsScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:log_aqua_app/core/models/client_model.dart';
 import 'package:log_aqua_app/core/widgets/main_app_bar.dart';
-import 'package:log_aqua_app/features/clients/widgets/cliente_form.dart';
+import 'package:log_aqua_app/features/clients/presentation/widgets/cliente_form.dart';
 
 class EditClientsScreen extends StatelessWidget {
   final ClientModel cliente;
